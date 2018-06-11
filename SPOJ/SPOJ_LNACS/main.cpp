@@ -16,29 +16,24 @@ using namespace std;
 //=====================================
 //Macros
 #define task ""
-#define maxvalueinp ()
+#define maxvalueinp (int)(10000+10)
 #define MODUL (int)(10e9+57)
+#define whole(x) x.begin(), x.end()
 #define FORi(x, y) for(int i=x; i<=y; ++i)
+#define FORj(x, y) for(int j=x; j<=y; ++j)
 #define FORli(x, y) for(int i=x; i<y; ++i)
 #define FORbi(x, y) for(int i=x; i>=y; --i)
 #define FORlbi(x, y) for(int i=x; i>y; --i)
-#define whole(x) x.begin(), x.end()
 #define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP(x) freopen(x".inp", "r", stdin); freopen(x".out", "w", stdout);
 
 //=====================================
 //Typedef
-struct PROB
-{
-    int a;
-    int b;
-};
-vector <PROB> vect;
-int n;
+typedef vector<int> vi;
+int F[maxvalueinp][maxvalueinp];
 int res;
-
-
-
+int a[maxvalueinp], b[maxvalueinp];
+int m, n;
 
 //=====================================
 //Functions and procedures
@@ -62,40 +57,37 @@ void IOSTROpt()
 //Input
 void Input()
 {
-    cin >> n;
-    FORi(1, 2*n)
+    scanf("%d%d", &m, &n);
+    FORi(1, m)
     {
-        PROB x;
-        cin >> x.a >> x.b;
-        vect.push_back(x);
+        scanf("%d", &a[i]);
+    }
+    FORi(1, n)
+    {
+        scanf("%d", &b[i]);
     }
 }
 
-//Check
-bool cmp(PROB x, PROB y)
+//Preparation
+void Prep()
 {
-    return x.a + y.b < x.b + y.a;
+    MEMS(F, 0);
+    FORi(1, n) F[1][i] = (a[1]==b[i]) ? 1 : F[1][i-1];
+    FORi(1, m) F[i][1] = (a[i]==b[1]) ? 1 : F[i-1][1];
 }
-
 
 //Process
 void Process()
 {
-    res = 0;
-    sort(whole(vect), cmp);
-    int mid = n;
-    FORli(0, mid)
+    FORi(2, m)
     {
-        res += vect[i].a;
+        FORj(2, n)
+        {
+            F[i][j] = (a[i]==b[j]) ? F[i-2][j-2] + 1 : max(max(F[i-1][j], F[i][j-1]), F[i-1][j-1]);
+        }
     }
-    FORli(mid, 2*n)
-    {
-        res += vect[i].b;
-    }
-    cout << res;
+    cout << F[m][n];
 }
-
-//Output
 
 //Main Procedure
 int main()

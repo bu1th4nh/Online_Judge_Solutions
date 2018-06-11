@@ -1,43 +1,45 @@
 //Libraries and namespaces
 //#include <bits/stdc++.h>
-#include <cstdio>
-#include <cstring>
-#include <cmath>
 #include <algorithm>
-#include <vector>
-#include <stack>
-#include <queue>
-#include <utility>
-#include <iostream>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fstream>
+#include <iostream>
+#include <queue>
+#include <stack>
+#include <string>
+#include <vector>
+#include <utility>
 using namespace std;
 
 
 //=====================================
 //Macros
 #define task ""
-#define maxvalueinp ()
+#define maxvalueinp (int)()
 #define MODUL (int)(10e9+57)
+#define len(x) (int)(x.length())
+#define siz(x) (int)(x.size())
+#define whole(x) x.begin(), x.end()
 #define FORi(x, y) for(int i=x; i<=y; ++i)
+#define FORj(x, y) for(int j=x; j<=y; ++j)
+#define FORk(x, y) for(int k=x; k<=y; ++k)
 #define FORli(x, y) for(int i=x; i<y; ++i)
 #define FORbi(x, y) for(int i=x; i>=y; --i)
 #define FORlbi(x, y) for(int i=x; i>y; --i)
-#define whole(x) x.begin(), x.end()
 #define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP(x) freopen(x".inp", "r", stdin); freopen(x".out", "w", stdout);
 
 //=====================================
 //Typedef
-struct PROB
-{
-    int a;
-    int b;
-};
-vector <PROB> vect;
+typedef stack<int> si;
+typedef vector<int> vi;
+vi vect;
+si stck;
+int Max;
 int n;
-int res;
-
-
 
 
 //=====================================
@@ -59,48 +61,35 @@ void IOSTROpt()
     cout.tie(NULL);
 }
 
-//Input
-void Input()
-{
-    cin >> n;
-    FORi(1, 2*n)
-    {
-        PROB x;
-        cin >> x.a >> x.b;
-        vect.push_back(x);
-    }
-}
-
-//Check
-bool cmp(PROB x, PROB y)
-{
-    return x.a + y.b < x.b + y.a;
-}
-
-
-//Process
-void Process()
-{
-    res = 0;
-    sort(whole(vect), cmp);
-    int mid = n;
-    FORli(0, mid)
-    {
-        res += vect[i].a;
-    }
-    FORli(mid, 2*n)
-    {
-        res += vect[i].b;
-    }
-    cout << res;
-}
-
-//Output
-
 //Main Procedure
 int main()
 {
-    Input();
-    Process();
+    Max = 0;
+    vect.push_back(0);
+    scanf("%d", &n);
+    FORi(1, n)
+    {
+        int x;
+        scanf("%d", &x);
+        vect.push_back(x);
+    }
+    FORi(1, n)
+    {
+        if(vect[i]<Max)
+        {
+            if(vect[i]!=stck.top())
+            {
+                cout << "YES";
+                return 0;
+            }
+            stck.pop();
+        }
+        else
+        {
+            FORj(Max+1, vect[i]-1) stck.push(j);
+            Max = vect[i];
+        }
+    }
+    cout << "NO";
     return 0;
 }

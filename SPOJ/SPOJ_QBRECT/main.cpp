@@ -16,28 +16,26 @@ using namespace std;
 //=====================================
 //Macros
 #define task ""
-#define maxvalueinp ()
+#define maxvalueinp (int)(10e3+10)
 #define MODUL (int)(10e9+57)
+#define MEMS(x, val) memset(x, val, sizeof(x))
 #define FORi(x, y) for(int i=x; i<=y; ++i)
+#define FORj(x, y) for(int j=x; j<=y; ++j)
 #define FORli(x, y) for(int i=x; i<y; ++i)
 #define FORbi(x, y) for(int i=x; i>=y; --i)
 #define FORlbi(x, y) for(int i=x; i>y; --i)
-#define whole(x) x.begin(), x.end()
-#define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP(x) freopen(x".inp", "r", stdin); freopen(x".out", "w", stdout);
 
 //=====================================
 //Typedef
-struct PROB
-{
-    int a;
-    int b;
-};
-vector <PROB> vect;
-int n;
+
+typedef stack<int> si;
+typedef vector<int> vi;
+int a[maxvalueinp][maxvalueinp];
+int Heigh[maxvalueinp], Left[maxvalueinp] , Right[maxvalueinp];
+int m, n;
 int res;
-
-
+si stck;
 
 
 //=====================================
@@ -62,40 +60,43 @@ void IOSTROpt()
 //Input
 void Input()
 {
-    cin >> n;
-    FORi(1, 2*n)
+    cin >> m >> n;
+    FORi(1, m)
     {
-        PROB x;
-        cin >> x.a >> x.b;
-        vect.push_back(x);
+        FORj(1, n)
+        {
+            cin >> a[i][j];
+        }
     }
-}
-
-//Check
-bool cmp(PROB x, PROB y)
-{
-    return x.a + y.b < x.b + y.a;
 }
 
 
 //Process
 void Process()
 {
-    res = 0;
-    sort(whole(vect), cmp);
-    int mid = n;
-    FORli(0, mid)
+    res = -INFINITY;
+    Heigh[0] = -1;
+    Heigh[n+1] = -1;
+    FORj(1, m)
     {
-        res += vect[i].a;
-    }
-    FORli(mid, 2*n)
-    {
-        res += vect[i].b;
+        FORi(1, n)
+        {
+            Heigh[i] = a[j][i]*(Heigh[i]+1);
+        }
+        FORi(1, n)
+        {
+            Left[i] = i;
+            while(Heigh[Left[i]-1]>=Heigh[i]) Left[i] = Left[Left[i]-1];
+        }
+        FORbi(n, 1)
+        {
+            Right[i] = i;
+            while(Heigh[Right[i]+1]>=Heigh[i]) Right[i] = Right[Right[i]+1];
+        }
+        FORi(1, n) res = max(res, Heigh[i]*(Right[i] - Left[i] + 1));
     }
     cout << res;
 }
-
-//Output
 
 //Main Procedure
 int main()

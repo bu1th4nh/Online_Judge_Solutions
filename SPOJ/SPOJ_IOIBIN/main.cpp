@@ -16,29 +16,19 @@ using namespace std;
 //=====================================
 //Macros
 #define task ""
-#define maxvalueinp ()
+#define maxvalueinp (int)(10e4+10)
 #define MODUL (int)(10e9+57)
+#define MEMS(x, val) memset(x, val, sizeof(x))
 #define FORi(x, y) for(int i=x; i<=y; ++i)
 #define FORli(x, y) for(int i=x; i<y; ++i)
 #define FORbi(x, y) for(int i=x; i>=y; --i)
 #define FORlbi(x, y) for(int i=x; i>y; --i)
-#define whole(x) x.begin(), x.end()
-#define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP(x) freopen(x".inp", "r", stdin); freopen(x".out", "w", stdout);
 
 //=====================================
 //Typedef
-struct PROB
-{
-    int a;
-    int b;
-};
-vector <PROB> vect;
-int n;
-int res;
-
-
-
+int lab[maxvalueinp];
+int query;
 
 //=====================================
 //Functions and procedures
@@ -58,49 +48,63 @@ void IOSTROpt()
     cin.tie(NULL);
     cout.tie(NULL);
 }
+void Init()
+{
+    MEMS(lab, -1);
+}
 
 //Input
 void Input()
 {
-    cin >> n;
-    FORi(1, 2*n)
-    {
-        PROB x;
-        cin >> x.a >> x.b;
-        vect.push_back(x);
-    }
+    cin >> query;
 }
-
-//Check
-bool cmp(PROB x, PROB y)
-{
-    return x.a + y.b < x.b + y.a;
-}
-
 
 //Process
-void Process()
+int FindSet(int u)
 {
-    res = 0;
-    sort(whole(vect), cmp);
-    int mid = n;
-    FORli(0, mid)
+    return (lab[u]<0) ? u : lab[u] = FindSet(lab[u]);
+}
+
+void Union(int r, int s)
+{
+    if (lab[r] > lab[s]) swap(r, s);
+    lab[r] += lab[s];
+    lab[s] = r;
+}
+void CheckSet(int u, int v)
+{
+    int r = FindSet(u);
+    int s = FindSet(v);
+    int res = (r == s) ? 1 : 0;
+    cout << res << endl;
+}
+void UnionSet(int u, int v)
+{
+    int r = FindSet(u);
+    int s = FindSet(v);
+    if (r!=s)
     {
-        res += vect[i].a;
+        Union(r, s);
     }
-    FORli(mid, 2*n)
-    {
-        res += vect[i].b;
-    }
-    cout << res;
 }
 
 //Output
+void Output()
+{
+    FORi(1, query)
+    {
+        int x, y, z;
+        cin >> x >> y >> z;
+        if (z==1) UnionSet(x, y);
+        else CheckSet(x, y);
+    }
+}
 
 //Main Procedure
 int main()
 {
     Input();
-    Process();
+    Init();
+    Output();
     return 0;
 }

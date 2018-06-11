@@ -16,28 +16,25 @@ using namespace std;
 //=====================================
 //Macros
 #define task ""
-#define maxvalueinp ()
+#define maxvalueinp (int)(1010)
 #define MODUL (int)(10e9+57)
+#define whole(x) x.begin(), x.end()
 #define FORi(x, y) for(int i=x; i<=y; ++i)
+#define FORj(x, y) for(int j=x; j<=y; ++j)
 #define FORli(x, y) for(int i=x; i<y; ++i)
 #define FORbi(x, y) for(int i=x; i>=y; --i)
 #define FORlbi(x, y) for(int i=x; i>y; --i)
-#define whole(x) x.begin(), x.end()
 #define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP(x) freopen(x".inp", "r", stdin); freopen(x".out", "w", stdout);
 
 //=====================================
 //Typedef
-struct PROB
-{
-    int a;
-    int b;
-};
-vector <PROB> vect;
-int n;
+typedef vector<int> vi;
+int F[4][53];
+int SumFuckingAll;
+int n, k;
 int res;
-
-
+vi a;
 
 
 //=====================================
@@ -62,40 +59,49 @@ void IOSTROpt()
 //Input
 void Input()
 {
-    cin >> n;
-    FORi(1, 2*n)
+    SumFuckingAll = 0;
+    scanf("%d%d", &n, &k);
+    a.push_back(-999999999);
+    FORi(1, n)
     {
-        PROB x;
-        cin >> x.a >> x.b;
-        vect.push_back(x);
+        int x;
+        scanf("%d", &x);
+        SumFuckingAll += x;
+        x%=k;
+        a.push_back(x);
     }
 }
-
-//Check
-bool cmp(PROB x, PROB y)
-{
-    return x.a + y.b < x.b + y.a;
-}
-
 
 //Process
+int SubMod(int x, int y)
+{
+    int tmp = (x-y);
+    return (tmp>=0) ? tmp : (tmp+k);
+}
 void Process()
 {
-    res = 0;
-    sort(whole(vect), cmp);
-    int mid = n;
-    FORli(0, mid)
+    int x=0, y=1;
+    FORi(1, k-1) F[0][i] = -MODUL;
+    F[0][0] = 0;
+    FORi(1, n)
     {
-        res += vect[i].a;
+        FORj(0, k-1)
+        {
+            F[y][j] = max(F[x][j], F[x][SubMod(j, a[i])] + 1);
+        }
+        x=1-x;
+        y=1-y;
     }
-    FORli(mid, 2*n)
-    {
-        res += vect[i].b;
-    }
-    cout << res;
+    res = F[x][0];
+    printf("%d", res);
 }
 
+
 //Output
+
+
+
+
 
 //Main Procedure
 int main()

@@ -16,27 +16,25 @@ using namespace std;
 //=====================================
 //Macros
 #define task ""
-#define maxvalueinp ()
+#define maxvalueinp (int)()
 #define MODUL (int)(10e9+57)
+#define whole(x) x.begin(), x.end()
 #define FORi(x, y) for(int i=x; i<=y; ++i)
 #define FORli(x, y) for(int i=x; i<y; ++i)
 #define FORbi(x, y) for(int i=x; i>=y; --i)
 #define FORlbi(x, y) for(int i=x; i>y; --i)
-#define whole(x) x.begin(), x.end()
 #define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP(x) freopen(x".inp", "r", stdin); freopen(x".out", "w", stdout);
 
 //=====================================
 //Typedef
-struct PROB
+struct point
 {
-    int a;
-    int b;
+    int val;
+    bool col;
 };
-vector <PROB> vect;
-int n;
-int res;
-
+vector<point> vp;
+int res, n;
 
 
 
@@ -58,49 +56,40 @@ void IOSTROpt()
     cin.tie(NULL);
     cout.tie(NULL);
 }
-
-//Input
-void Input()
+bool cmp(point a, point b)
 {
-    cin >> n;
-    FORi(1, 2*n)
-    {
-        PROB x;
-        cin >> x.a >> x.b;
-        vect.push_back(x);
-    }
+    return a.val < b.val;
 }
-
-//Check
-bool cmp(PROB x, PROB y)
-{
-    return x.a + y.b < x.b + y.a;
-}
-
-
-//Process
-void Process()
-{
-    res = 0;
-    sort(whole(vect), cmp);
-    int mid = n;
-    FORli(0, mid)
-    {
-        res += vect[i].a;
-    }
-    FORli(mid, 2*n)
-    {
-        res += vect[i].b;
-    }
-    cout << res;
-}
-
-//Output
 
 //Main Procedure
 int main()
 {
-    Input();
-    Process();
+    cin >> n;
+    FORi(1, n)
+    {
+        point x;
+        cin >> x.val;
+        x.col = 0;
+        vp.push_back(x);
+    }
+    FORi(1, n)
+    {
+        point x;
+        cin >> x.val;
+        x.col = 1;
+        vp.push_back(x);
+    }
+    n*=2;
+    res = 0;
+    sort(whole(vp), cmp);
+    FORli(1, n)
+    {
+        if (vp[i].col != vp[i-1].col)
+        {
+            ++res;
+            ++i;
+        }
+    }
+    cout << res;
     return 0;
 }
