@@ -1,8 +1,16 @@
+/*==========================================================================================*\
+**                        _           _ _   _     _  _         _                            **
+**                       | |__  _   _/ | |_| |__ | || |  _ __ | |__                         **
+**                       | '_ \| | | | | __| '_ \| || |_| '_ \| '_ \                        **
+**                       | |_) | |_| | | |_| | | |__   _| | | | | | |                       **
+**                       |_.__/ \__,_|_|\__|_| |_|  |_| |_| |_|_| |_|                       **
+\*==========================================================================================*/
 //Libraries and namespaces
 //#include <bits/stdc++.h>
 #include <algorithm>
 #include <bitset>
 #include <cmath>
+#include <complex>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -16,143 +24,261 @@
 #include <sstream>
 #include <stack>
 #include <string>
+#include <tuple>
 #include <vector>
 #include <utility>
+
+#if __cplusplus >= 201103L
+#include <unordered_map>
+#include <unordered_set>
+#include <random>
+#endif // __cplusplus
+
 using namespace std;
 
 
 //=====================================
-//Macros
-#define task ""
+//Macroes
+#define sp " "
+#define el "\n"
+#define task "UPGRADE"
 #define fi first
 #define se second
 #define pb push_back
-#define maxinp (int)(131072)
-#define MODUL (int)(1e9+57)
+#define maxinp (int)()
 #define siz(x) (int)(x.size())
 #define len(x) (int)(x.length())
-#define whole(x) x.begin(), x.end()
+#define whole(x) x.begin()+1, x.end()
 #define FOR(i, x, y) for(int i=x; i<=y; ++i)
 #define FORl(i, x, y) for(int i=x; i<y; ++i)
 #define FORb(i, x, y) for(int i=x; i>=y; --i)
 #define FORlb(i, x, y) for(int i=x; i>y; --i)
 #define MEMS(x, val) memset(x, val, sizeof(x))
 #define FILEOP() {freopen(task".inp", "r", stdin); freopen(task".out", "w", stdout);}
+#define FILEOP_DEBUG() {freopen(task".inp", "r", stdin); freopen(task".out", "w", stdout); freopen(task".err", "w", stderr);}
+
+
+const long long inf = (1LL << 61) - 1LL;
+//=====================================
+//Class library
+struct edge
+{
+    int u, v, cost;
+
+    edge() {}
+    edge(int u, int v, int c): u(u), v(v), cost(c) {}
+
+    bool operator < (const edge &oth) const
+    {
+        return this->cost > oth.cost;
+    }
+};
+struct DisjointSet
+{
+    typedef vector<int> vi;
+
+    vi lab;
+    int n;
+
+    int find(int u)
+    {
+        return (lab[u] < 0) ? u : (lab[u] = find(lab[u]));
+    }
+    bool unify(int r, int s)
+    {
+        r = find(r);
+        s = find(s);
+        if(r == s) return 0;
+
+        if(lab[s] < lab[r]) swap(r, s);
+        lab[r] += lab[s];
+        lab[s] = r;
+
+        return 1;
+    }
+
+
+    ~DisjointSet() {}
+
+    DisjointSet() {}
+    DisjointSet(int __n)
+    {
+        lab = vi(__n+16, -1);
+        n = __n;
+    }
+};
+struct LowestCommonAncestor
+{
+    const int MAX_LOG = 21;
+
+    typedef long long ll;
+    typedef pair<int, ll> ii;
+    typedef vector<int> vi;
+    typedef vector<ii> vii;
+    typedef vector<vi> vvi;
+    typedef vector<vii> vvii;
+
+    int n;
+    vvii par, adj;
+    vi depth;
+
+
+    ll min(ll __a, ll __b, ll __c)
+    {
+        return std::min(__a, std::min(__b, __c));
+    }
+    void addEdge(const edge &e)
+    {
+        adj[e.u].push_back(ii(e.v, e.cost));
+        adj[e.v].push_back(ii(e.u, e.cost));
+    }
+    void DFS(int u, int parent)
+    {
+        for(ii x: adj[u])
+        {
+            int v = x.first;
+            if(v == parent) continue;
+            depth[v] = depth[u] + 1;
+
+            par[v][0] = ii(u, x.second);
+            FOR(i, 1, 18)
+            {
+                par[v][i].fi = par[par[v][i-1].fi][i-1].fi;
+                par[v][i].se = std::min(par[par[v][i-1].fi][i-1].se, par[v][i-1].se);
+            }
+
+            DFS(v, u);
+        }
+
+    }
+    ii LCA(int u, int v)
+    {
+        ii p;
+
+        p.second = inf;
+        if(depth[u] > depth[v]) swap(u, v);
+        int diff = depth[v] - depth[u];
+
+        FORb(i, 18, 0) if((diff >> i)&1)
+        {
+            p.se = std::min(p.se, par[v][i].se);
+            v = par[v][i].fi;
+        }
+
+        if(u == v) return ii(u, p.se);
+        FORb(i, 18, 0) if(par[u][i].fi != par[v][i].fi)
+        {
+            p.se = min(p.se, par[u][i].se, par[v][i].se);
+            v = par[v][i].fi;
+            u = par[u][i].fi;
+        }
+
+        return ii(par[u][0].fi, min(p.second, par[u][0].se, par[v][0].se));
+    }
+    void extractLCA(int u, int v, int &x, ll &y)
+    {
+        ii ret = LCA(u, v);
+        x = ret.first;
+        y = ret.second;
+    }
+
+
+    ~LowestCommonAncestor() {}
+
+    LowestCommonAncestor() {}
+    LowestCommonAncestor(int __n)
+    {
+        n = __n;
+        adj = vvii(n+1);
+        depth = vi(n+1, 0);
+        par = vvii(n+1, vii(MAX_LOG));
+
+        depth[1] = 1;
+    }
+
+};
 
 //=====================================
-//Typedef
+//Typedefs
 typedef long long ll;
 typedef unsigned long long ull;
-typedef pair<ll, ll> ii;
-typedef pair<ll, ii> iii;
-typedef vector<iii> viii;
+typedef pair<int, ll> ii;
 typedef vector<bool> vb;
+typedef vector<edge> ve;
+typedef vector<int> vi;
 typedef vector<ii> vii;
-typedef vector<ll> vi;
-ii par[maxinp][20];
-vii adj[maxinp];
-ll m, n, res;
-vi root, h;
-viii EList;
+typedef vector<vi> vvi;
+typedef vector<vb> vvb;
+typedef vector<vii> vvii;
+ve edgeList;
 vb avail;
+int n, m;
+ll res;
 
 //=====================================
 //Functions and procedures
+//Initialization and preparation
+void FileInit()
+{
+    FILEOP()
+}
+void FileDebug()
+{
+    FILEOP_DEBUG()
+}
+void FileClose()
+{
+    fclose(stdin);
+    fclose(stdout);
+}
+
 //Enter
 void Enter()
 {
-	scanf("%lld%lld", &n, &m);
+    int u, v, c;
+    scanf("%d%d", &n, &m);
 
-	EList.push_back(iii(999999999, ii(-1, -1)));
+    edgeList = ve(m+1);
+    avail = vb(m+1, 1);
 
-	avail = vb(m+1, true);
-	root = h = vi(n+1);
-
-	FOR(i, 1, m)
-	{
-	    int u, v, c;
-	    scanf("%lld%lld%lld", &u, &v, &c);
-	    EList.push_back(iii(c, ii(u, v)));
-	}
-}
-
-//Kruskal's Algorithm
-ll GetRoot(ll u)
-{
-    return (root[u] == 0) ? u : (root[u] = GetRoot(root[u]));
-}
-bool cmp(iii a, iii b)
-{
-    return (a.first > b.first);
-}
-void Kruskal()
-{
-    res = 0;
-    sort(whole(EList), cmp);
-    FOR(i, 1, m)
-    {
-        iii edge = EList[i];
-        int u = edge.second.first, v = edge.second.second, w = edge.first;
-        int p = GetRoot(u), q = GetRoot(v);
-        if(p != q)
-        {
-            root[p] = q;
-            avail[i] = false;
-            adj[u].pb(ii(v, w));
-            adj[v].pb(ii(u, w));
-        }
-    }
+    FOR(i, 1, m) scanf("%d%d%d", &u, &v, &c), edgeList[i] = edge(u, v, c);
 }
 
 //Process
-void DFS(ll u, ll tr)
-{
-    for(ii vertex: adj[u])
-    {
-        ll v = vertex.first;
-        if(v == tr) continue;
-        h[v] = h[u] + 1;
-        par[v][0] = ii(u, vertex.second);
-        FOR(i, 1, 18)
-        {
-            par[v][i].first = par[par[v][i-1].first][i-1].first;
-            par[v][i].second = min(par[par[v][i-1].first][i-1].second, par[v][i-1].second);
-        }
-        DFS(v, u);
-    }
-}
-ii LCA(ll u, ll v)
-{
-    ii p;
-    p.second = ll(1e18);
-    if(h[u] > h[v]) swap(u, v);
-    ll diff = h[v] - h[u];
-    FORb(i, 18, 0) if((diff >> i)&1)
-    {
-        p.second = min(p.second, par[v][i].second);
-        v = par[v][i].first;
-    }
-    if(v == u) return ii(u, p.second);
-    FORb(i, 18, 0) if(par[u][i].first != par[v][i].first)
-    {
-        p.second = min(p.second, min(par[u][i].second, par[v][i].second));
-        v = par[v][i].first;
-        u = par[u][i].first;
-    }
-    return ii(par[u][0].first, min(p.second, min(par[u][0].second, par[v][0].second)));
-}
 void Solve()
 {
-    Kruskal();
-    h[1] = 1;
-    DFS(1, 0);
+    res = 0LL;
+
+    LowestCommonAncestor lca(n);
+    DisjointSet          dsu(n);
+
+    edge e;
+    int u;
+    ll w;
+
+    sort(whole(edgeList));
+    FOR(i, 1, m)
+    {
+        e = edgeList[i];
+        if(dsu.unify(e.u, e.v))
+        {
+            avail[i] = 0;
+            lca.addEdge(e);
+        }
+    }
+
+    lca.DFS(1, 0);
     FOR(i, 1, m) if(avail[i])
     {
-        ii l = LCA(EList[i].second.first, EList[i].second.second);
-        res += max(0LL, l.second - EList[i].first);
+        e = edgeList[i];
+
+        lca.extractLCA(e.u, e.v, u, w);
+        res += max(0LL, w - 1LL*e.cost);
     }
-    printf("%lld", res);
+
+    cout << res;
 }
+
 
 //Main Procedure
 int main()
