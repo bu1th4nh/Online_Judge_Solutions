@@ -125,6 +125,7 @@ void Solve()
     lab = vi(n+1, -1);
     for(iii &x: b) Join(x.se.fi, x.se.se);
     for(iii &x: a) res[x.first] = Join(x.se.fi, x.se.se);
+
     lab = vi(n+1, -1);
     for(iii &x: a) if(res[x.first])
     {
