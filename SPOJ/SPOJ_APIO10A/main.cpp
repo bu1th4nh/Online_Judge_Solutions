@@ -241,12 +241,13 @@ void Enter()
 //Process
 void Solve()
 {
-    ConvexHullDP Planaxis;
+    ConvexHullDP Planaxis;		//Just some codename
     FOR(i, 1, n+1)
     {
         #ifndef NGUYEN_RR
             Planaxis.update((-2LL * A * ps[i-1]) , (dp[i-1] + G(i-1)));
-            dp[i] = Planaxis.query(ps[i]) + F(ps[i]);        #else
+            dp[i] = Planaxis.query(ps[i]) + F(ps[i]);
+	#else
             Planaxis.update(-(-2LL * A * ps[i-1]) , -(dp[i-1] + G(i-1)));
             dp[i] = -Planaxis.query(ps[i]) + F(ps[i]);
         #endif
