@@ -129,7 +129,7 @@ struct ConvexHullDP : multiset<Line>
 
 #else
 /*    And this is the implementation for CHT by Thanh Trung Nguyen, aka RR,
-      team RRWatameda @ NUS' notebook and this is also my code.               */
+      team RRWatameda @ NUS' notebook and this is also my preferred implementation.   */
 
 struct ConvexHullDP
 {
