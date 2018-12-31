@@ -23,7 +23,7 @@ using namespace std;
 
 //=====================================
 //Macros
-#define task ""
+#define task "GRAPH_"
 #define fi first
 #define se second
 #define pb push_back
@@ -37,7 +37,7 @@ using namespace std;
 #define FORb(i, x, y) for(int i=x; i>=y; --i)
 #define FORlb(i, x, y) for(int i=x; i>y; --i)
 #define MEMS(x, val) memset(x, val, sizeof(x))
-#define FILEOP() {freopen(task".inp", "r", stdin); freopen(task".out", "w", stdout);}
+#define FILEOP() {freopen(task".inp", "r", stdin);}
 
 //=====================================
 //Typedef
@@ -118,6 +118,7 @@ void Solve()
 //Main Procedure
 int main()
 {
+    FILEOP();
     Enter();
     Solve();
     return 0;
